@@ -51,7 +51,7 @@ const VerificationCodeSchema = new mongoose.Schema({
 const AdminAccount = mongoose.model('AdminAccount', AdminAccountSchema);
 const VerificationCode = mongoose.model('VerificationCode', VerificationCodeSchema);
 
-// Load Approved Teachers from JSON file
+// Load Approved Teachers from JSON file (refreshes on every call)
 function loadApprovedTeachers() {
     try {
         const filePath = path.join(__dirname, 'admin-authorized.json');
@@ -64,8 +64,9 @@ function loadApprovedTeachers() {
     }
 }
 
-let APPROVED_TEACHERS = loadApprovedTeachers();
-console.log(`✅ Loaded ${APPROVED_TEACHERS.length} authorized teacher emails`);
+// Load initial count for startup message
+const initialTeachers = loadApprovedTeachers();
+console.log(`✅ Loaded ${initialTeachers.length} authorized teacher emails`);
 
 // Helper function to generate 6-digit code
 function generateVerificationCode() {
@@ -536,6 +537,9 @@ app.post('/api/admin/check-email', async (req, res) => {
         
         const trimmedEmail = email.trim().toLowerCase();
         
+        // Load fresh list from file on every request ✅
+        const APPROVED_TEACHERS = loadApprovedTeachers();
+        
         // Check if email is in approved list (ONLY CHECK - don't block for existing accounts)
         const isApproved = APPROVED_TEACHERS.some(approvedEmail => 
             approvedEmail.toLowerCase() === trimmedEmail
@@ -580,6 +584,9 @@ app.post('/api/admin/create-account', async (req, res) => {
         
         const trimmedEmail = email.trim().toLowerCase();
         const trimmedUsername = username.trim();
+        
+        // Load fresh list from file on every request ✅
+        const APPROVED_TEACHERS = loadApprovedTeachers();
         
         // Verify email is authorized
         const isAuthorized = APPROVED_TEACHERS.some(t => t.toLowerCase() === trimmedEmail);
