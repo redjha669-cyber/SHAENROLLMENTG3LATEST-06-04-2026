@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SHA Teacher - Enrollment Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Sacred Heart Academy of Sta. Maria</title>
 
     <style>
         * {
@@ -16,20 +15,20 @@
         html, body {
             width: 100%;
             height: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url('SHA-INTRO-DEFAULT.gif') center/cover no-repeat fixed;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
         }
 
-        /* ===== ADMIN LOGIN BUTTON (TOP RIGHT) ===== */
-        .admin-login-btn {
-            position: fixed;
-            top: 20px;
-            right: 25px;
-            z-index: 100;
+        /* ===== LOGIN BUTTON ===== */
+        .login-btn-top {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            z-index: 10;
             background: rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(6px);
             color: white;
-            padding: 12px 25px;
+            padding: 10px 22px;
             border-radius: 20px;
             font-size: 0.95rem;
             font-weight: bold;
@@ -38,443 +37,141 @@
             border: 1px solid rgba(255,255,255,0.35);
         }
 
-        .admin-login-btn:hover {
-            background: #FF6B6B;
+        .login-btn-top:hover {
+            background: #00A693;
             transform: translateY(-2px);
         }
 
-        /* ===== SIDEBAR/NAV ===== */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
-            height: 100%;
-            background: linear-gradient(180deg, #00A693 0%, #008f80 100%);
+        .center-content {
+            position: absolute;
+            top: 58%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
             color: white;
-            padding: 30px 0 20px 0;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
+            text-shadow: 0 0 10px black;
+            animation: fadeIn 1.8s ease-out;
+            white-space: nowrap;
         }
 
-        .sidebar.collapsed {
-            transform: translateX(-100%);
+        .school-name-big {
+            font-size: 4.6rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            margin-bottom: 22px;
+            display: inline-block;
+            animation: bounceGlow 2.5s ease-in-out infinite;
         }
 
-        .sidebar-toggle {
-            position: fixed;
-            left: 20px;
-            top: 20px;
-            z-index: 101;
+        .button-group {
+            margin-top: 55px;
+        }
+
+        .enroll-btn {
+            background-color: #00A693;
+            padding: 15px 45px;
+            color: white;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+        }
+
+        .enroll-btn:hover {
+            background-color: black;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bottom-nav {
+            width: 100%;
             background: rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 25px 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .bottom-nav a {
             color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 1.3rem;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.35);
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 8px 14px;
+            border-radius: 8px;
             transition: 0.3s ease;
         }
 
-        .sidebar-toggle:hover {
-            background: #00A693;
-        }
-
-        .logo-section {
-            text-align: center;
-            padding: 0 20px 30px 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .logo-section img {
-            width: 70px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-        }
-
-        .logo-section h1 {
-            font-size: 1.15em;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .logo-section p {
-            font-size: 0.85em;
-            opacity: 0.9;
-        }
-
-        .nav-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-
-        .nav-menu li {
-            margin: 0;
-        }
-
-        .nav-menu a {
-            display: block;
-            padding: 15px 25px;
-            color: white;
-            text-decoration: none;
-            transition: 0.3s;
-            font-weight: 500;
-            border-left: 4px solid transparent;
-        }
-
-        .nav-menu a:hover {
+        .bottom-nav a:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-left-color: #FFD700;
-            padding-left: 30px;
+            transform: translateY(-4px);
         }
 
-        .nav-menu a.active {
-            background: rgba(255, 255, 255, 0.3);
-            border-left-color: #FFD700;
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .main-content {
-            margin-left: 260px;
-            width: calc(100% - 260px);
-            height: 100%;
-            overflow-y: auto;
-            padding: 30px;
-            background: #f5f5f5;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-            width: 100%;
-        }
-
-        /* ===== DASHBOARD CONTAINER ===== */
-        .dashboard {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .dashboard-header {
-            margin-bottom: 40px;
-        }
-
-        .dashboard-header h1 {
-            font-size: 2.5em;
-            color: #003F39;
-            margin-bottom: 10px;
-        }
-
-        .dashboard-header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        /* ===== STATS CARDS ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-label {
-            color: #888;
-            font-size: 0.95em;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #00A693;
-            margin-bottom: 15px;
-        }
-
-        .stat-description {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        /* ===== CHART SECTION ===== */
-        .chart-section {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
-        }
-
-        .chart-title {
-            font-size: 1.4em;
-            color: #003F39;
-            margin-bottom: 25px;
-            font-weight: 700;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin-bottom: 20px;
-        }
-
-        .chart-info {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            color: #666;
-            font-size: 0.95em;
-            text-align: center;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-            }
-
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px;
-            }
-
-            .dashboard-header h1 {
-                font-size: 1.8em;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-container {
-                height: 300px;
-            }
-        }
-
-        /* ===== ANIMATIONS ===== */
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            100% { opacity: 1; transform: translate(-50%, -50%); }
         }
 
-        .dashboard {
-            animation: fadeIn 0.5s ease-out;
+        @keyframes bounceGlow {
+            0%, 100% {
+                transform: translateY(0);
+                text-shadow:
+                    0 0 6px rgba(255,255,255,0.7),
+                    0 0 14px rgba(0,255,225,0.6);
+            }
+            50% {
+                transform: translateY(-8px);
+                text-shadow:
+                    0 0 10px rgba(255,255,255,0.8),
+                    0 0 22px rgba(0,255,225,0.7);
+            }
         }
     </style>
+</head>
 <body>
-    <!-- SIDEBAR WITH COLLAPSIBLE NAV -->
-    <div class="sidebar" id="sidebar">
-        <div class="logo-section">
-            <img src="sha_logo.png" alt="SHA Logo" />
-            <h1>Sacred Heart</h1>
-            <p>Academy</p>
-        </div>
-        <ul class="nav-menu">
-            <li><a href="#" class="active">📊 Home</a></li>
-            <li><a href="admin-login.html">🔒 Admin</a></li>
-        </ul>
-    </div>
 
-    <!-- TOGGLE BUTTON -->
-    <div class="sidebar-toggle" id="sidebarToggle">→</div>
+    <section class="video-container">
 
-    <!-- ADMIN LOGIN BUTTON -->
-    <a href="admin-login.html" class="admin-login-btn">🔒 Admin Login</a>
+        <!-- LOGIN BUTTON -->
+        <a href="admin-login.html" class="login-btn-top">Login</a>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content" id="mainContent">
-        <div class="dashboard">
-            <div class="dashboard-header">
-                <h1>📊 Welcome to SHA Enrollment Dashboard</h1>
-                <p>Real-time enrollment tracking and analytics</p>
-            </div>
+        <img class="hero-video" src="SHA-INTRO-DEFAULT.gif" alt="SHA Welcome">
 
-            <!-- STATS CARDS -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Enrollments</div>
-                    <div class="stat-value" id="totalEnrollments">0</div>
-                    <div class="stat-description">Students enrolled this season</div>
-                </div>
+        <div class="center-content">
+            <div class="school-name-big">Welcome Back, SHAns!</div>
 
-                <div class="stat-card">
-                    <div class="stat-label">Today's Enrollments</div>
-                    <div class="stat-value" id="todayEnrollments">0</div>
-                    <div class="stat-description">Enrollments completed today</div>
-                </div>
-            </div>
-
-            <!-- DAILY ENROLLMENT CHART -->
-            <div class="chart-section">
-                <h2 class="chart-title">📈 Daily Enrollments Trend</h2>
-                <div class="chart-container">
-                    <canvas id="dailyEnrollmentChart"></canvas>
-                </div>
-                <div class="chart-info" id="chartInfo">
-                    Hover over bars to see daily enrollment counts
-                </div>
-            </div>
-
-            <!-- ENROLL STUDENT BUTTON -->
-            <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
-                <a href="verification.html" id="enrollTeacherBtn" style="display: inline-block; background: linear-gradient(135deg, #00A693 0%, #008f80 100%); color: white; padding: 15px 40px; border-radius: 30px; font-size: 1.1em; font-weight: 600; text-decoration: none; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); transition: 0.3s; border: none; cursor: pointer;">➕ Enroll New Student</a>
+            <div class="button-group">
+                <a href="verification.html" class="enroll-btn">Enroll Now</a>
             </div>
         </div>
-    </div>
+    </section>
 
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const toggleBtn = document.getElementById('sidebarToggle');
-        let sidebarOpen = true;
+    <section style="min-height:60vh; padding-top:40px;">
+        <div class="bottom-nav">
+            <a href="Home.html">Home</a>
+            <a href="About Us.html">About Us</a>
+            <a href="Contact Us.html">Contact Us</a>
+            <a href="SHS Program.html">SHS Program</a>
+        </div>
+    </section>
 
-        // Sidebar toggle functionality
-        toggleBtn.addEventListener('click', () => {
-            sidebarOpen = !sidebarOpen;
-            if (sidebarOpen) {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('expanded');
-                toggleBtn.textContent = '←';
-            } else {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('expanded');
-                toggleBtn.textContent = '→';
-            }
-        });
-
-        // Fetch and display analytics
-        async function loadAnalytics() {
-            try {
-                const response = await fetch('/api/analytics');
-                const data = await response.json();
-                
-                document.getElementById('totalEnrollments').textContent = data.totalEnrollments;
-                document.getElementById('todayEnrollments').textContent = data.todayEnrollments;
-            } catch (error) {
-                console.error('Error loading analytics:', error);
-            }
-        }
-
-        // Fetch and display daily enrollment chart
-        let dailyChart = null;
-
-        async function loadDailyChart() {
-            try {
-                const response = await fetch('/api/analytics/daily');
-                const data = await response.json();
-
-                const ctx = document.getElementById('dailyEnrollmentChart').getContext('2d');
-                
-                if (dailyChart) {
-                    dailyChart.destroy();
-                }
-
-                dailyChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.map(d => d.displayDate),
-                        datasets: [{
-                            label: 'Enrollments',
-                            data: data.map(d => d.count),
-                            backgroundColor: '#00A693',
-                            borderColor: '#008f80',
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                labels: {
-                                    font: { size: 12, weight: 'bold' },
-                                    color: '#333'
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.parsed.y + ' students enrolled';
-                                    }
-                                },
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                padding: 12,
-                                titleFont: { size: 13, weight: 'bold' },
-                                bodyFont: { size: 12 }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    font: { size: 11 },
-                                    color: '#666'
-                                },
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    font: { size: 11 },
-                                    color: '#666'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Error loading daily chart:', error);
-                document.getElementById('chartInfo').textContent = 'Could not load chart data';
-            }
-        }
-
-        // Handle teacher enrollment
-        document.getElementById('enrollTeacherBtn').addEventListener('click', (e) => {
-            localStorage.setItem('userType', 'teacher');
-        });
-
-        // Load data on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            loadAnalytics();
-            loadDailyChart();
-
-            // Refresh data every 30 seconds
-            setInterval(() => {
-                loadAnalytics();
-                loadDailyChart();
-            }, 30000);
-        });
-    </script>
 </body>
 </html>
